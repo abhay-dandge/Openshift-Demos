@@ -1,0 +1,6 @@
+# Red Hat S2I Build Environment Configuration
+# Read automatically by official s2i-python assemble and run scripts
+APP_FILE=app.py
+APP_MODULE=app:application
+PORT=8080
+PIP_NO_CACHE_DIR=1

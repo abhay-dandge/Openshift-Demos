@@ -1,0 +1,10 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: s2i-python-demo
+  labels:
+    app: s2i-python-demo
+    app.kubernetes.io/part-of: openshift-demos
+spec:
+  lookupPolicy:
+    local: true

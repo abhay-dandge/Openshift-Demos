@@ -1,0 +1,5 @@
+{
+  "name": "custom-s2i-sample-app",
+  "version": "1.0.0",
+  "description": "Sample application source consumed by Custom S2I Builder"
+}

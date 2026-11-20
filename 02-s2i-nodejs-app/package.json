@@ -1,0 +1,22 @@
+{
+  "name": "openshift-s2i-nodejs-demo",
+  "version": "1.0.0",
+  "description": "Production OpenShift Source-to-Image (S2I) Node.js Demo",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test_server.js"
+  },
+  "keywords": [
+    "openshift",
+    "s2i",
+    "ubi9",
+    "nodejs",
+    "redhat"
+  ],
+  "author": "Red Hat OpenShift Community",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

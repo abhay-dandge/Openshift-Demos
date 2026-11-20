@@ -1,0 +1,37 @@
+#!/bin/bash
+# ==============================================================================
+# S2I run script
+# Executed when container is launched. Starts the application process.
+# ==============================================================================
+set -euo pipefail
+
+APP_DIR="${APP_ROOT:-/opt/app-root}/src"
+PORT="${PORT:-8080}"
+
+echo "---> Starting application via S2I run script..."
+echo "---> Runtime User ID: $(id -u) (Group: $(id -g))"
+echo "---> Listening Port: ${PORT}"
+
+# Load environment overrides if present
+if [[ -f "${APP_DIR}/.s2i/environment" ]]; then
+  set -a
+  source "${APP_DIR}/.s2i/environment"
+  set +a
+fi
+
+cd "${APP_DIR}"
+
+# Determine entrypoint
+if [[ -f "${APP_DIR}/app.py" ]]; then
+  echo "---> Executing Python application: app.py"
+  exec python3 app.py
+elif [[ -f "${APP_DIR}/server.py" ]]; then
+  echo "---> Executing Python server: server.py"
+  exec python3 server.py
+elif [[ -f "${APP_DIR}/index.html" ]]; then
+  echo "---> No Python entrypoint detected. Launching built-in HTTP server for static assets..."
+  exec python3 -m http.server "${PORT}" --bind 0.0.0.0
+else
+  echo "---> ERROR: No executable entrypoint or index.html found in ${APP_DIR}!"
+  exit 1
+fi

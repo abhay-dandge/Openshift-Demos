@@ -1,0 +1,5 @@
+# Red Hat Node.js S2I Builder Configuration
+NODE_ENV=production
+NPM_RUN=start
+PORT=8080
+DEV_MODE=false

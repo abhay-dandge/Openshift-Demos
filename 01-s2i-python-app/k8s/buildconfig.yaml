@@ -1,0 +1,30 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: s2i-python-demo
+  labels:
+    app: s2i-python-demo
+    app.kubernetes.io/part-of: openshift-demos
+spec:
+  runPolicy: Serial
+  source:
+    type: Binary # Supports binary upload via `oc start-build s2i-python-demo --from-dir=.` or git
+  strategy:
+    type: Source
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        name: python:3.9-ubi9
+        namespace: openshift
+      env:
+        - name: APP_FILE
+          value: app.py
+        - name: APP_MODULE
+          value: app:application
+  output:
+    to:
+      kind: ImageStreamTag
+      name: s2i-python-demo:latest
+  triggers:
+    - type: ConfigChange
+    - type: ImageChange

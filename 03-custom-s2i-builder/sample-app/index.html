@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenShift Custom S2I Builder Demo</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      margin: 0;
+      padding: 40px;
+      background: #f0f2f5;
+      color: #1a202c;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 10px 15px rgba(0, 0, 0, 0.1);
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 32px;
+      border-top: 6px solid #ee0000; /* Red Hat Red */
+    }
+    h1 {
+      color: #ee0000;
+      margin-top: 0;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+      background: #e2e8f0;
+      color: #4a5568;
+      margin-right: 8px;
+    }
+    .badge.success {
+      background: #c6f6d5;
+      color: #22543d;
+    }
+    pre {
+      background: #2d3748;
+      color: #f7fafc;
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Custom S2I Builder Succeeded!</h1>
+    <div>
+      <span class="badge success">STATUS: ACTIVE</span>
+      <span class="badge">S2I BUILDER: UBI9</span>
+      <span class="badge">PLATFORM: OPENSHIFT</span>
+    </div>
+    <p>This static website was built and served using a custom Source-to-Image (S2I) builder image based on Red Hat Universal Base Image 9.</p>
+    <h3>S2I Lifecycle Demonstration</h3>
+    <ul>
+      <li><strong>assemble:</strong> Copied application sources from <code>/tmp/src</code> to <code>/opt/app-root/src</code></li>
+      <li><strong>permissions:</strong> Applied group 0 permissions for OpenShift arbitrary UID compatibility</li>
+      <li><strong>run:</strong> Spawned HTTP daemon bound to non-privileged port <code>8080</code></li>
+    </ul>
+  </div>
+</body>
+</html>

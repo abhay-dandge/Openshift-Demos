@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: s2i-python-demo
+  labels:
+    app: s2i-python-demo
+    app.kubernetes.io/part-of: openshift-demos
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: s2i-python-demo
+  template:
+    metadata:
+      labels:
+        app: s2i-python-demo
+    spec:
+      containers:
+        - name: s2i-python-demo
+          image: s2i-python-demo:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          env:
+            - name: PORT
+              value: "8080"
+            - name: APP_NAME
+              value: "openshift-s2i-python-demo"
+            - name: APP_VERSION
+              value: "1.0.0"
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 2
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true

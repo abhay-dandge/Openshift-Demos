@@ -1,0 +1,88 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: custom-s2i-sample-app
+  labels:
+    app: custom-s2i-sample-app
+    app.kubernetes.io/part-of: openshift-demos
+spec:
+  runPolicy: Serial
+  source:
+    type: Binary
+  strategy:
+    type: Source
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        name: custom-s2i-builder:latest
+  output:
+    to:
+      kind: ImageStreamTag
+      name: custom-s2i-sample-app:latest
+  triggers:
+    - type: ConfigChange
+    - type: ImageChange
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: custom-s2i-sample-app
+  labels:
+    app: custom-s2i-sample-app
+    app.kubernetes.io/part-of: openshift-demos
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: custom-s2i-sample-app
+  template:
+    metadata:
+      labels:
+        app: custom-s2i-sample-app
+    spec:
+      containers:
+        - name: app
+          image: custom-s2i-sample-app:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+          resources:
+            limits:
+              cpu: 300m
+              memory: 256Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: custom-s2i-sample-app
+  labels:
+    app: custom-s2i-sample-app
+    app.kubernetes.io/part-of: openshift-demos
+spec:
+  selector:
+    app: custom-s2i-sample-app
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: http
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: custom-s2i-sample-app
+  labels:
+    app: custom-s2i-sample-app
+    app.kubernetes.io/part-of: openshift-demos
+spec:
+  to:
+    kind: Service
+    name: custom-s2i-sample-app
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

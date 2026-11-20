@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: openshift-demos
+
+resources:
+  - k8s/00-namespace.yaml
+  - k8s/01-serviceaccount.yaml
+  - k8s/02-configmap.yaml
+  - k8s/03-secret.yaml
+  - k8s/04-imagestream.yaml
+  - k8s/05-buildconfig.yaml
+  - k8s/06-deployment.yaml
+  - k8s/07-service.yaml
+  - k8s/08-route.yaml
+  - k8s/09-hpa.yaml
+  - k8s/10-networkpolicy.yaml
+
+commonLabels:
+  app.kubernetes.io/part-of: openshift-demos
+  app.kubernetes.io/managed-by: kustomize

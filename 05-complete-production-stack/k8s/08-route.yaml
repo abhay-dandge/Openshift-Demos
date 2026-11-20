@@ -1,0 +1,21 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: production-stack
+  namespace: openshift-demos
+  labels:
+    app: production-stack
+  annotations:
+    # Production security headers and timeouts
+    haproxy.router.openshift.io/timeout: 60s
+    haproxy.router.openshift.io/hsts_header: "max-age=31536000;includeSubDomains;preload"
+spec:
+  to:
+    kind: Service
+    name: production-stack
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

@@ -1,0 +1,19 @@
+#!/bin/bash
+# ==============================================================================
+# S2I save-artifacts script
+# Executed during incremental builds to stream cached artifacts to stdout tar.
+# ==============================================================================
+set -euo pipefail
+
+APP_DIR="${APP_ROOT:-/opt/app-root}/src"
+
+# Save pip cache or dependency directories if they exist
+if [[ -d "${APP_DIR}/.cache" ]]; then
+  echo "---> Archiving cache for incremental build..." >&2
+  tar -C "${APP_DIR}" -cf - .cache
+elif [[ -d "${HOME}/.cache" ]]; then
+  tar -C "${HOME}" -cf - .cache
+else
+  # If no cache directory exists, output empty tar stream to prevent error
+  tar -cf - -T /dev/null
+fi

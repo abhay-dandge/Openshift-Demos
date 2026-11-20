@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: s2i-python-demo
+  labels:
+    app: s2i-python-demo
+    app.kubernetes.io/part-of: openshift-demos
+spec:
+  selector:
+    app: s2i-python-demo
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: http
+      protocol: TCP

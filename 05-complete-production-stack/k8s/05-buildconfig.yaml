@@ -1,0 +1,35 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: production-stack
+  namespace: openshift-demos
+  labels:
+    app: production-stack
+spec:
+  runPolicy: Serial
+  resources:
+    limits:
+      cpu: "1"
+      memory: "1Gi"
+    requests:
+      cpu: "250m"
+      memory: "256Mi"
+  source:
+    type: Binary
+  strategy:
+    type: Source
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        name: python:3.9-ubi9
+        namespace: openshift
+      env:
+        - name: APP_FILE
+          value: main.py
+  output:
+    to:
+      kind: ImageStreamTag
+      name: production-stack:latest
+  triggers:
+    - type: ConfigChange
+    - type: ImageChange

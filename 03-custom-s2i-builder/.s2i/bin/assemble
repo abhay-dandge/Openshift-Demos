@@ -1,0 +1,48 @@
+#!/bin/bash
+# ==============================================================================
+# S2I assemble script
+# Executed inside builder container during S2I image build phase.
+# Takes application source code from /tmp/src and prepares it for execution.
+# ==============================================================================
+set -euo pipefail
+
+echo "---> Starting S2I assemble phase..."
+
+APP_DIR="${APP_ROOT:-/opt/app-root}/src"
+SRC_DIR="/tmp/src"
+ARTIFACTS_DIR="/tmp/artifacts"
+
+# 1. Restore cached artifacts from previous build (if incremental build)
+if [[ -d "${ARTIFACTS_DIR}" && "$(ls -A "${ARTIFACTS_DIR}" 2>/dev/null)" ]]; then
+  echo "---> Restoring build cache from ${ARTIFACTS_DIR}..."
+  if [[ -d "${ARTIFACTS_DIR}/.cache" ]]; then
+    cp -r "${ARTIFACTS_DIR}/.cache" "${APP_DIR}/" || true
+  fi
+fi
+
+# 2. Copy source code from /tmp/src to application directory
+if [[ -d "${SRC_DIR}" ]]; then
+  echo "---> Copying application source code from ${SRC_DIR} to ${APP_DIR}..."
+  cp -Rf "${SRC_DIR}/." "${APP_DIR}/"
+fi
+
+# 3. Source environment configuration if provided
+if [[ -f "${APP_DIR}/.s2i/environment" ]]; then
+  echo "---> Loading custom S2I environment configuration..."
+  set -a
+  source "${APP_DIR}/.s2i/environment"
+  set +a
+fi
+
+# 4. Install dependencies if requirements.txt exists
+if [[ -f "${APP_DIR}/requirements.txt" ]]; then
+  echo "---> Found requirements.txt. Installing Python dependencies..."
+  pip3 install --no-cache-dir -r "${APP_DIR}/requirements.txt"
+fi
+
+# 5. Fix permissions for OpenShift arbitrary UID compatibility (Group 0 must have g=u)
+echo "---> Ensuring file permissions comply with OpenShift arbitrary UID specification..."
+chgrp -R 0 "${APP_DIR}" || true
+chmod -R g=u "${APP_DIR}" || true
+
+echo "---> S2I assemble phase completed successfully!"

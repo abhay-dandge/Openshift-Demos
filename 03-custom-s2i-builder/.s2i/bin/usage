@@ -1,0 +1,21 @@
+#!/bin/bash
+cat <<EOF
+================================================================================
+Custom Red Hat UBI 9 S2I Builder Image
+================================================================================
+
+This builder image is used by OpenShift Source-to-Image (S2I) to build and run
+web applications or lightweight Python microservices.
+
+Usage with OpenShift CLI:
+  oc new-app custom-s2i-builder~https://github.com/<your-repo>/<app-dir>
+
+Usage with S2I command-line tool:
+  s2i build <source-dir> custom-s2i-builder <output-image-name>
+
+Required Contract:
+  - Source code placed in /tmp/src during build.
+  - Entrypoint script (app.py, server.py) or static HTML files (index.html).
+  - Port 8080 exposed for unprivileged OpenShift containers.
+================================================================================
+EOF

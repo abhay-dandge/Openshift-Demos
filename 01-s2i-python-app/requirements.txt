@@ -1,0 +1,3 @@
+# Dependencies for Python S2I Build
+# In Red Hat UBI Python builder images, pip will install these during the 'assemble' phase
+gunicorn>=21.2.0

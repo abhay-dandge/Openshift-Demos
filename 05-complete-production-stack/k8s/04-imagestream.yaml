@@ -1,0 +1,10 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: production-stack
+  namespace: openshift-demos
+  labels:
+    app: production-stack
+spec:
+  lookupPolicy:
+    local: true

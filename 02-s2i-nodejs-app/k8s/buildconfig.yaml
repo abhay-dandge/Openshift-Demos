@@ -1,0 +1,30 @@
+apiVersion: build.openshift.io/v1
+kind: BuildConfig
+metadata:
+  name: s2i-nodejs-demo
+  labels:
+    app: s2i-nodejs-demo
+    app.kubernetes.io/part-of: openshift-demos
+spec:
+  runPolicy: Serial
+  source:
+    type: Binary
+  strategy:
+    type: Source
+    sourceStrategy:
+      from:
+        kind: ImageStreamTag
+        name: nodejs:18-ubi9
+        namespace: openshift
+      env:
+        - name: NODE_ENV
+          value: production
+        - name: NPM_RUN
+          value: start
+  output:
+    to:
+      kind: ImageStreamTag
+      name: s2i-nodejs-demo:latest
+  triggers:
+    - type: ConfigChange
+    - type: ImageChange

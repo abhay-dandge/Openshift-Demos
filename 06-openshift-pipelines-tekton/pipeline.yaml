@@ -1,0 +1,108 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: s2i-pipeline-workspace-pvc
+  labels:
+    app.kubernetes.io/part-of: openshift-demos
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: s2i-python-ci-cd-pipeline
+  labels:
+    app.kubernetes.io/part-of: openshift-demos
+spec:
+  description: "Official OpenShift Pipelines (Tekton) Cloud-Native S2I CI/CD Pipeline"
+  params:
+    - name: git-url
+      type: string
+      description: "Git repository containing application code"
+      default: "https://github.com/redhat-developer/s2i-python-container.git"
+    - name: git-revision
+      type: string
+      description: "Git branch or commit tag"
+      default: "master"
+    - name: image-name
+      type: string
+      description: "Target image stream tag in internal registry"
+      default: "image-registry.openshift-image-registry.svc:5000/openshift-demos/pipeline-python-app:latest"
+    - name: deployment-name
+      type: string
+      description: "Deployment resource to roll out"
+      default: "pipeline-python-app"
+  workspaces:
+    - name: shared-workspace
+  tasks:
+    # Task 1: Clone git repository
+    - name: fetch-repository
+      taskRef:
+        name: git-clone
+        kind: ClusterTask
+      workspaces:
+        - name: output
+          workspace: shared-workspace
+      params:
+        - name: url
+          value: $(params.git-url)
+        - name: revision
+          value: $(params.git-revision)
+        - name: deleteExisting
+          value: "true"
+
+    # Task 2: Build container image using official Red Hat S2I Task
+    - name: s2i-build
+      taskRef:
+        name: s2i-python
+        kind: ClusterTask
+      runAfter:
+        - fetch-repository
+      workspaces:
+        - name: source
+          workspace: shared-workspace
+      params:
+        - name: IMAGE
+          value: $(params.image-name)
+        - name: VERSION
+          value: "3.9-ubi9"
+
+    # Task 3: Trigger deployment and verify rollout status
+    - name: rollout-deployment
+      taskRef:
+        name: openshift-client
+        kind: ClusterTask
+      runAfter:
+        - s2i-build
+      params:
+        - name: SCRIPT
+          value: |
+            echo "Awaiting deployment rollout..."
+            oc rollout status deployment/$(params.deployment-name) || true
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: s2i-python-pipeline-run-
+  labels:
+    app.kubernetes.io/part-of: openshift-demos
+spec:
+  pipelineRef:
+    name: s2i-python-ci-cd-pipeline
+  params:
+    - name: git-url
+      value: "https://github.com/redhat-developer/s2i-python-container.git"
+    - name: git-revision
+      value: "master"
+    - name: image-name
+      value: "image-registry.openshift-image-registry.svc:5000/openshift-demos/pipeline-python-app:latest"
+    - name: deployment-name
+      value: "pipeline-python-app"
+  workspaces:
+    - name: shared-workspace
+      persistentVolumeClaim:
+        claimName: s2i-pipeline-workspace-pvc

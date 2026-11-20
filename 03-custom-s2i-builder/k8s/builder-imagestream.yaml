@@ -1,0 +1,21 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: custom-s2i-builder
+  labels:
+    app: custom-s2i-builder
+    app.kubernetes.io/part-of: openshift-demos
+spec:
+  lookupPolicy:
+    local: true
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  name: custom-s2i-sample-app
+  labels:
+    app: custom-s2i-sample-app
+    app.kubernetes.io/part-of: openshift-demos
+spec:
+  lookupPolicy:
+    local: true

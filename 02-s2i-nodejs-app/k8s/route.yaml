@@ -1,0 +1,16 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: s2i-nodejs-demo
+  labels:
+    app: s2i-nodejs-demo
+    app.kubernetes.io/part-of: openshift-demos
+spec:
+  to:
+    kind: Service
+    name: s2i-nodejs-demo
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect

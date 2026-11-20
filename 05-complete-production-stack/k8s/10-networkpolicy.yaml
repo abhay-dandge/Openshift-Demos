@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-from-router-and-namespace
+  namespace: openshift-demos
+  labels:
+    app: production-stack
+spec:
+  podSelector:
+    matchLabels:
+      app: production-stack
+  policyTypes:
+    - Ingress
+  ingress:
+    # 1. Allow traffic from OpenShift Ingress Router
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              network.openshift.io/policy-group: ingress
+      ports:
+        - protocol: TCP
+          port: 8080
+    # 2. Allow traffic from pods within the same namespace
+    - from:
+        - podSelector: {}
+      ports:
+        - protocol: TCP
+          port: 8080
