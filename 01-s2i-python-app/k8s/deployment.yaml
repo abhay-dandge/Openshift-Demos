@@ -5,6 +5,17 @@ metadata:
   labels:
     app: s2i-python-demo
     app.kubernetes.io/part-of: openshift-demos
+  annotations:
+    image.openshift.io/triggers: |-
+      [
+        {
+          "from": {
+            "kind": "ImageStreamTag",
+            "name": "s2i-python-demo:latest"
+          },
+          "fieldPath": "spec.template.spec.containers[?(@.name=='s2i-python-demo')].image"
+        }
+      ]
 spec:
   replicas: 1
   selector:

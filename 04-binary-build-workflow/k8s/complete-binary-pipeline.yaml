@@ -44,6 +44,17 @@ metadata:
   labels:
     app: binary-python-demo
     app.kubernetes.io/part-of: openshift-demos
+  annotations:
+    image.openshift.io/triggers: |-
+      [
+        {
+          "from": {
+            "kind": "ImageStreamTag",
+            "name": "binary-python-demo:latest"
+          },
+          "fieldPath": "spec.template.spec.containers[?(@.name=='app')].image"
+        }
+      ]
 spec:
   replicas: 1
   selector:

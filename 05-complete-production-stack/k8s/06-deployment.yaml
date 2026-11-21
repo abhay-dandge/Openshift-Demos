@@ -5,6 +5,17 @@ metadata:
   namespace: openshift-demos
   labels:
     app: production-stack
+  annotations:
+    image.openshift.io/triggers: |-
+      [
+        {
+          "from": {
+            "kind": "ImageStreamTag",
+            "name": "production-stack:latest"
+          },
+          "fieldPath": "spec.template.spec.containers[?(@.name=='app')].image"
+        }
+      ]
 spec:
   replicas: 2
   revisionHistoryLimit: 5
